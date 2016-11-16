@@ -1,0 +1,18 @@
+{
+    "name": "bespired/tapinoma",
+    "description": "Compile sass into css",
+    "keywords": [
+    ],
+    "type": "",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.5.0",
+        "leafo/scssphp": "0.6.6",
+        "patchwork/jsqueeze": "~2.0",
+    },
+    "autoload": {
+        "psr-4": {
+            "Bespired\\Tapinoma\\": "src/Bespired/Tapinoma/"               
+        }
+    }
+}

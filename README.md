@@ -4,7 +4,7 @@ Nodeless Sass and Js for Laravel
 
 ## Getting started
 
-Add Build Core to your composer.json file:
+Add Tapinoma to your composer.json file:
 
 ```
 "require": {

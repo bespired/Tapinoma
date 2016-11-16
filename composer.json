@@ -1,6 +1,6 @@
 {
     "name": "bespired/tapinoma",
-    "description": "Compile sass into css",
+    "description": "Compile sass into css and jrsc into js",
     "keywords": [
     ],
     "type": "",

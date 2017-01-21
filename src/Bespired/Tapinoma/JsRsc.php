@@ -38,7 +38,7 @@ class JsRsc
 			return;
 		}
 
-		echo "/* JsRsc v0.2 */\n";
+		echo "/* JsRsc v0.3 */\n";
 
 		$files= $this->getFiles();
 
@@ -46,7 +46,8 @@ class JsRsc
 		foreach ($files as $filename) {
 			$changed .= (string)filemtime($filename)."\n";
 		}
-		$md5= md5($changed);
+		$pre= str_replace('.jsrc', '', $this->jsrc_file ).'-';
+		$md5= $pre.md5($changed);
 
 
 		$cache_root= $this->root . 'jsrc_cache' . DIRECTORY_SEPARATOR;
@@ -64,14 +65,20 @@ class JsRsc
 		$jz = new JSqueeze();
 
 		$minifiedJs = $jz->squeeze(
-    		$fatJs,
-    			$this->config->singleLine,
-    			$this->config->keepImportantComments,
-    			$this->config->specialVarRx
+			$fatJs,
+				$this->config->singleLine,
+				$this->config->keepImportantComments,
+				$this->config->specialVarRx
 			);
 
 		echo $minifiedJs;
 		if(!file_exists($cache_root)) mkdir($cache_root);
+
+		// remove old versions
+		foreach(glob($cache_root. DIRECTORY_SEPARATOR .$pre . "*") as $f) {
+			unlink($f);
+		}
+		// write new version
 		file_put_contents($cache_file, $minifiedJs);
 
 	}
@@ -80,7 +87,7 @@ class JsRsc
 
 		$filename = trim($filename);
 		if (substr($filename,-3) != '.js') $filename .= '.js';
-		return $this->srcpath . DIRECTORY_SEPARATOR. $filename;
+		return $this->srcpath . DIRECTORY_SEPARATOR . $filename;
 	}
 
 	private function getFiles() {

@@ -15,11 +15,11 @@ class CssSass
 
 		$uri_parts= explode('/',$_SERVER['REQUEST_URI']);
 		$sass_file= array_pop($uri_parts);
-		
+
 		$this->root= $directory . DIRECTORY_SEPARATOR;
 		$this->sass_file = $sass_file;
 		$this->set_env();
-	
+
 	}
 
 	public function serve()
@@ -54,6 +54,39 @@ class CssSass
 
 	}
 
+	public static function list($var, $list)
+	{
+		if( 'array' == gettype($list)){
+			$list = join(' ', array_flatten($list));
+		}
+		$srcr       = new self(__DIR__);
+		$root       = $srcr->config()->sass . 'sass:_settings.scss';
+		$segments   = explode(DIRECTORY_SEPARATOR, __DIR__);
+		$segment_id = array_search ('vendor', $segments);
+		$segments   = array_slice($segments, 0, $segment_id);
+		$root       = strtr( join(':', $segments) . ':' . $root, ':', DIRECTORY_SEPARATOR);
+		$search     = sprintf('$%s:'  , $var);
+		$variables  = sprintf('%s %s;', $search, $list);
+
+		$settings   = file_get_contents($root);
+		if ( strpos($settings, $variables) ) return;
+
+		$lines      = preg_split('/\r\n|\n|\r/', trim($settings));
+		$altered    = false;
+		foreach ($lines as $idx => &$line) {
+			$line = trim($line);
+			$get  = strpos($line, $search);
+			if ( $get === 0 ){
+				$line    = $variables;
+				$altered = true;
+			}
+		}
+		if(!$altered){
+			$lines[]= $search . ' ' . $list;
+		}
+		file_put_contents($root, join("\n", $lines));
+	}
+
 	private function config()
 	{
 		$config      = [];
@@ -61,7 +94,7 @@ class CssSass
 		$app_config  = strtr(sprintf('%s:config:tapinoma.php', $root_path),':', DIRECTORY_SEPARATOR);
 
 		$config_path = realpath(strtr(sprintf('%s:..:..:..:config:tapinoma.php', __DIR__), ':', DIRECTORY_SEPARATOR));
-		
+
 		if (file_exists($config_path)) $config= include $config_path;
 		if (file_exists($app_config )) $config= array_merge( $config, include $app_config);
 
@@ -91,13 +124,13 @@ class CssSass
 				if (strlen(trim($single)))
 				{
 					list($var, $val) = [
-						trim(explode("=", $single)[0]), 
+						trim(explode("=", $single)[0]),
 						trim(explode("=", $single)[1])
 					];
 					if (!getenv($var)){
-						putenv($single);	
+						putenv($single);
 					}
-				} 
+				}
 			}
 		}
 	}

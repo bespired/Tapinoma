@@ -2,7 +2,7 @@
 
 namespace Bespired\Tapinoma;
 
-use Patchwork\JSqueeze;
+use Bespired\Tapinoma\JSqueeze;
 
 
 class JsImp
